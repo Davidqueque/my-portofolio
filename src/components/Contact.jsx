@@ -22,7 +22,7 @@ const Contact = ({ handleDownloadCV }) => {
             <Mail size={24} className="text-white" />
           </a>
           <a
-            href="https://linkedin.com/in/yourprofile"
+            href="https://www.linkedin.com/in/vincent-sugiarto-a59983344/"
             className="bg-white/10 backdrop-blur-sm p-4 rounded-full hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
             target="_blank"
             rel="noopener noreferrer"

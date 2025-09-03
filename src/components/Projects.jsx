@@ -65,7 +65,7 @@ const Projects = ({
     setCurrentScreenshotIndex(index);
   };
 
-  // Klik pada card (kecuali link)
+  // Handle card click (except links)
   const handleCardClick = (e, projectIndex) => {
     if (e.target.closest("a")) return;
     openSlideshow(projectIndex);
@@ -155,9 +155,10 @@ const Projects = ({
         </div>
       </div>
 
-      {/* Modal slideshow */}
+      {/* Modal slideshow with custom slider */}
       {selectedProjectIndex !== null && currentProject && (
         <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50">
+          {/* Close button */}
           <button
             onClick={closeSlideshow}
             className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors z-10 bg-white/10 backdrop-blur-sm rounded-full p-2 hover:bg-white/20"
@@ -165,31 +166,68 @@ const Projects = ({
             <X size={24} />
           </button>
 
+          {/* Navigation arrows */}
           {screenshots.length > 1 && (
             <>
               <button
                 onClick={goToPrevious}
-                className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20"
+                className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 z-10"
               >
                 <ChevronLeft size={24} />
               </button>
               <button
                 onClick={goToNext}
-                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20"
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 z-10"
               >
                 <ChevronRight size={24} />
               </button>
             </>
           )}
 
-          <div className="flex flex-col items-center max-w-7xl max-h-[85vh] px-6">
-            {screenshots.length > 0 ? (
-              <div className="relative">
-                <img
-                  src={screenshots[currentScreenshotIndex].image}
-                  alt={screenshots[currentScreenshotIndex].title}
-                  className="max-h-[85vh] max-w-full rounded-xl shadow-2xl object-contain"
+          {/* Slide counter */}
+          {screenshots.length > 1 && (
+            <div className="absolute top-4 sm:top-6 left-4 sm:left-6 text-white/80 text-xs sm:text-sm bg-black/50 backdrop-blur-sm px-2 sm:px-3 py-1 rounded-full z-10">
+              {currentScreenshotIndex + 1} / {screenshots.length}
+            </div>
+          )}
+
+          {/* Dot indicators */}
+          {screenshots.length > 1 && (
+            <div className="absolute top-4 sm:top-6 left-1/2 transform -translate-x-1/2 flex gap-1 sm:gap-2 z-10">
+              {screenshots.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToScreenshot(index)}
+                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
+                    index === currentScreenshotIndex
+                      ? "bg-purple-400"
+                      : "bg-white/40 hover:bg-white/60"
+                  }`}
                 />
+              ))}
+            </div>
+          )}
+
+          {/* Main content area */}
+          <div className="flex flex-col items-center max-w-7xl max-h-[90vh] px-6 w-full">
+            {screenshots.length > 0 ? (
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Current screenshot */}
+                <div className="flex flex-col items-center justify-center h-full">
+                  <img
+                    src={screenshots[currentScreenshotIndex].image}
+                    alt={screenshots[currentScreenshotIndex].title}
+                    className="max-h-[70vh] max-w-full rounded-xl shadow-2xl object-contain"
+                    style={{ transition: "opacity 0.3s ease-in-out" }}
+                  />
+
+                  {/* Screenshot description */}
+                  <div className="mt-6 bg-black/60 backdrop-blur-sm rounded-xl p-4 max-w-4xl mx-auto">
+                    <p className="text-white/90 text-center text-sm leading-relaxed">
+                      {screenshots[currentScreenshotIndex].description}
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-center h-60 bg-white/10 rounded-xl">
@@ -198,35 +236,39 @@ const Projects = ({
             )}
           </div>
 
-          <div className="absolute bottom-6 left-6 right-6 text-center bg-black/80 backdrop-blur-sm rounded-xl p-4">
-            <p className="text-white/80 mb-0 text-sm max-w-4xl mx-auto">
-              {currentProject.screenshots[currentScreenshotIndex].description}
+          {/* Project info */}
+          <div className="absolute bottom-6 left-6 right-6 text-center bg-black/60 backdrop-blur-sm rounded-xl p-4">
+            <h3 className="text-white font-semibold text-lg mb-2">
+              {currentProject.title}
+            </h3>
+            <p className="text-white/80 text-sm max-w-4xl mx-auto">
+              {currentProject.description}
             </p>
           </div>
-
-          {screenshots.length > 1 && (
-            <>
-              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 flex gap-2">
-                {screenshots.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToScreenshot(index)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentScreenshotIndex
-                        ? "bg-purple-400"
-                        : "bg-white/40 hover:bg-white/60"
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <div className="absolute top-6 left-6 text-white/80 text-sm bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
-                {currentScreenshotIndex + 1} / {screenshots.length}
-              </div>
-            </>
-          )}
         </div>
       )}
+
+      <style jsx>{`
+        /* Custom styles for smooth transitions */
+        .slide-enter {
+          opacity: 0;
+          transform: translateX(100px);
+        }
+        .slide-enter-active {
+          opacity: 1;
+          transform: translateX(0);
+          transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .slide-exit {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        .slide-exit-active {
+          opacity: 0;
+          transform: translateX(-100px);
+          transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+      `}</style>
     </section>
   );
 };

@@ -19,7 +19,7 @@ const Portfolio = () => {
   }, []);
 
   const handleDownloadCV = () => {
-    window.open("public/cv/CV (2).pdf", "_blank");
+    window.open("/my-portofolio/cv/CV.pdf", "_blank");
   };
 
   return (
