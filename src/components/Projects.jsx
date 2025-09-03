@@ -237,11 +237,11 @@ const Projects = ({
           </div>
 
           {/* Project info */}
-          <div className="absolute bottom-6 left-6 right-6 text-center bg-black/60 backdrop-blur-sm rounded-xl p-4">
-            <h3 className="text-white font-semibold text-lg mb-2">
+          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-center bg-black/60 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4">
+            <h3 className="text-white font-semibold text-base sm:text-lg mb-1 sm:mb-2">
               {currentProject.title}
             </h3>
-            <p className="text-white/80 text-sm max-w-4xl mx-auto">
+            <p className="text-white/80 text-xs sm:text-sm max-w-4xl mx-auto line-clamp-2 sm:line-clamp-none">
               {currentProject.description}
             </p>
           </div>
