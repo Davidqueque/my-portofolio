@@ -10,7 +10,12 @@ const Projects = ({
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
   const [currentScreenshotIndex, setCurrentScreenshotIndex] = useState(0);
 
-  // Reset screenshot index when project changes
+  // State untuk swipe
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const minSwipeDistance = 50; // minimal jarak untuk dianggap swipe
+
+  // Reset screenshot index ketika project berubah
   useEffect(() => {
     setCurrentScreenshotIndex(0);
   }, [selectedProjectIndex]);
@@ -65,7 +70,25 @@ const Projects = ({
     setCurrentScreenshotIndex(index);
   };
 
-  // Handle card click (except links)
+  // Swipe gesture handlers
+  const onTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+
+    if (distance > minSwipeDistance) {
+      goToNext(); // swipe kiri → next
+    } else if (distance < -minSwipeDistance) {
+      goToPrevious(); // swipe kanan → prev
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  // Handle card click (kecuali link)
   const handleCardClick = (e, projectIndex) => {
     if (e.target.closest("a")) return;
     openSlideshow(projectIndex);
@@ -155,7 +178,7 @@ const Projects = ({
         </div>
       </div>
 
-      {/* Modal slideshow with custom slider */}
+      {/* Modal slideshow dengan swipe support */}
       {selectedProjectIndex !== null && currentProject && (
         <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50">
           {/* Close button */}
@@ -208,11 +231,15 @@ const Projects = ({
             </div>
           )}
 
-          {/* Main content area */}
-          <div className="flex flex-col items-center max-w-7xl max-h-[90vh] px-6 w-full">
+          {/* Main content area with swipe support */}
+          <div
+            className="flex flex-col items-center max-w-7xl max-h-[90vh] px-6 w-full"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             {screenshots.length > 0 ? (
               <div className="relative w-full h-full flex items-center justify-center">
-                {/* Current screenshot */}
                 <div className="flex flex-col items-center justify-center h-full">
                   <img
                     src={screenshots[currentScreenshotIndex].image}
@@ -220,8 +247,6 @@ const Projects = ({
                     className="max-h-[70vh] max-w-full rounded-xl shadow-2xl object-contain"
                     style={{ transition: "opacity 0.3s ease-in-out" }}
                   />
-
-                  {/* Screenshot description */}
                   <div className="mt-6 bg-black/60 backdrop-blur-sm rounded-xl p-4 max-w-4xl mx-auto">
                     <p className="text-white/90 text-center text-sm leading-relaxed">
                       {screenshots[currentScreenshotIndex].description}
@@ -247,28 +272,6 @@ const Projects = ({
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        /* Custom styles for smooth transitions */
-        .slide-enter {
-          opacity: 0;
-          transform: translateX(100px);
-        }
-        .slide-enter-active {
-          opacity: 1;
-          transform: translateX(0);
-          transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        .slide-exit {
-          opacity: 1;
-          transform: translateX(0);
-        }
-        .slide-exit-active {
-          opacity: 0;
-          transform: translateX(-100px);
-          transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-      `}</style>
     </section>
   );
 };
